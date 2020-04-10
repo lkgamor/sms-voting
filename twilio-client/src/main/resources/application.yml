@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: ninja1993X.
+    url: jdbc:mysql://localhost:3306/votes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: root
+  flyway:
+    baseline-on-migrate: true
+    enabled: true
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    show-sql: true
+  main:
+    allow-bean-definition-overriding: true
+twilio:
+  account_sid: ACee48e97cdf4dc53f47b7196111bdf146
+  auth_token: 2c17fdd5899819385f5b7ce0661ce061
+  trial_number: '+12097944767'

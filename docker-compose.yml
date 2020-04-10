@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  twilio-client:
+    image: louisga/twilio:1.0
+    container_name: voting-app
+    restart: always
+    environment:
+      - TRIAL_NUMBER='+12097944767'
+      - AUTH_TOKEN=2c17fdd5899819385f5b7ce0661ce061
+      - ACCOUNT_SID=ACee48e97cdf4dc53f47b7196111bdf146
+      - SPRING_DATASOURCE_USER=root
+      - SPRING_DATASOURCE_PASSWORD=twilio_pwd
+      - SPRING_DATASOURCE_URL=jdbc:mysql://twilio-database:3306/votes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true&serverTimezone=UTC
+    depends_on:
+      - twilio-database
+    networks:
+      - mysql-network
+    ports:
+      - '9000:8080'
+
+  twilio-database:
+    image: mysql:5.7
+    container_name: voting-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=twilio_pwd
+      - MYSQL_DATABASE=votes
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+    command: mysqld --lower_case_table_names=1 --character_set_server=utf8 --default-authentication-plugin=mysql_native_password --explicit_defaults_for_timestamp=ON
+    volumes: 
+      - mysql-database:/var/lib/mysql
+    networks:
+      - mysql-network
+    ports:
+      - '3306:3306'
+
+
+volumes:
+  mysql-database:
+
+networks:
+  mysql-network:
+    driver: bridge
