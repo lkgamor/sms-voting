@@ -17,7 +17,7 @@ services:
     networks:
       - mysql-network
     ports:
-      - '9000:8080'
+      - '8181:8080'
 
   twilio-database:
     image: mysql:5.7
