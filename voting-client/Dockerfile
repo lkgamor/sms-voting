@@ -1,6 +1,6 @@
 FROM openjdk:latest
 
-ADD ./target/voting.jar voting.jar
+COPY target/voting.jar voting.jar
 
 EXPOSE 9000
 
