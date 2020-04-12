@@ -20,6 +20,12 @@ public class Candidate implements Serializable {
 	
 	@Column(name="candidate_name")
 	private String candidateName;
+	
+	@Column(name="candidate_email")
+	private String candidateEmail;
+	
+	@Column(name="candidate_image")
+	private byte[] candidateImage;
 
 	@Column(name="total_vote_count")
 	private Integer totalVoteCount;	

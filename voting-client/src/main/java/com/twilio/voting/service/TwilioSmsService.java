@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.twilio.voting.model.SmsBody;
 
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -16,7 +17,7 @@ public class TwilioSmsService {
 	
 	private final VotingService votingService;
 	
-	public void sendSms(SmsBody smsBody) {
+	public void sendSms(SmsBody smsBody) throws NotFoundException {
 		twilioSmsSender.sendSms(smsBody);
 		votingService.voteForCandidate(smsBody);
 	}

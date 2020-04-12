@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.twilio.voting.model.SmsBody;
 import com.twilio.voting.service.TwilioSmsService;
 
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,7 +21,7 @@ public class VotingRestController {
 	private final TwilioSmsService twilioSmsService;
 	
 	@PostMapping("/send")
-	public void sendSms(@Valid @RequestBody SmsBody smsBody) {
+	public void sendSms(@Valid @RequestBody SmsBody smsBody) throws NotFoundException {
 		twilioSmsService.sendSms(smsBody);
 	}
 	
