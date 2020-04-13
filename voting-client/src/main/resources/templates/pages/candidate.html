@@ -23,16 +23,17 @@
     <!-- Styles -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:600,700" rel="stylesheet">
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/fontawesome-all.css" rel="stylesheet">
-    <link href="css/swiper.css" rel="stylesheet">
-	<link href="css/magnific-popup.css" rel="stylesheet">
-    <link href="css/styles.css" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/css/fontawesome-all.css}" rel="stylesheet">
+    <link th:href="@{/css/swiper.css}" rel="stylesheet">
+	<link th:href="@{/css/magnific-popup.css}" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link th:href="@{/css/sweetalert.css}" rel="stylesheet">
 	
 	<!-- Favicon  -->
     <link rel="icon" href="images/favicon.png">
 </head>
-<body data-spy="scroll" data-target=".fixed-top">
+<body data-spy="scroll" data-target=".fixed-top" class="no-overflow">
     
     <div th:replace="fragment/layout :: header"></div>
 
@@ -41,28 +42,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h1>Add A New Candidate</h1>
+                    <h1 th:text="${pageTitle}"></h1>
                 </div> <!-- end of col -->
             </div> <!-- end of row -->
         </div> <!-- end of container -->
     </header> <!-- end of ex-header -->
     <!-- end of header -->
-
-
-    <!-- Breadcrumbs -->
-    <div class="ex-basic-1">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="breadcrumbs">
-                        <a href="index.html">Home</a><i class="fa fa-angle-double-right"></i><span>Privacy Policy</span>
-                    </div> <!-- end of breadcrumbs -->
-                </div> <!-- end of col -->
-            </div> <!-- end of row -->
-        </div> <!-- end of container -->
-    </div> <!-- end of ex-basic-1 -->
-    <!-- end of breadcrumbs -->
-
 
     <!-- Privacy Content -->
     <div class="ex-basic-2">
@@ -71,37 +56,32 @@
                 <div class="col-lg-10 offset-lg-1">
                     <div class="text-container">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="text-container last">
-                                <input type="file" class="profile-pic">                               
-                            </div> <!-- end of text container -->
-                        </div> <!-- end of col-->
-                        <div class="col-md-6">
+                        <div class="col-md-12">
 
                             <!-- Privacy Form -->
-                            <div class="form-container">
-                            	<h3>Candidate Data</h3>
-                                <form id="privacyForm" data-toggle="validator" data-focus="false">
+                            <div class="form-container text-center" th:object="${candidate}">
+                            	<input hidden="hidden" th:field="*{candidateId}">
+                            	<img alt="Candidate Picture" class="candidate-image" th:src="@{/images/candidate.svg}">
+                                <form class="w-50 m-auto" id="candidateForm" data-toggle="validator" data-focus="false">
                                     <div class="form-group">
-                                        <input type="text" class="form-control-input" id="cname" required>
-                                        <label class="label-control" for="pname">Name</label>
+                                        <input type="text" class="form-control-input py-2" th:field="*{candidateName}" placeholder="Name" required>
                                         <div class="help-block with-errors"></div>
                                     </div>
                                     <div class="form-group">
-                                        <input type="email" class="form-control-input" id="cemail" required>
-                                        <label class="label-control" for="pemail">Email</label>
+                                        <input type="email" class="form-control-input py-2" th:field="*{candidateEmail}" placeholder="Email" required>
                                         <div class="help-block with-errors"></div>
                                     </div>
                                     <div class="form-group">
-                                        <input type="file" class="form-control-input" id="cpicture" required>
-                                        <label class="label-control" for="pemail">Picture</label>
+                                        <input type="file" class="form-control-input py-1" id="cpicture">
                                         <div class="help-block with-errors"></div>
                                     </div>
                                     <div class="form-group">
-                                        <button type="submit" class="form-control-submit-button">SUBMIT</button>
+                                        <button th:if="${candidate.candidateId}" type="submit" class="form-control-submit-button w-50">UPDATE</button>
+                                        <button th:unless="${candidate.candidateId}" type="submit" class="form-control-submit-button w-50">REGISTER</button>
                                     </div>
                                     <div class="form-message">
-                                        <div id="pmsgSubmit" class="h3 text-center hidden"></div>
+                                    	<div th:if="${candidate.candidateId}" id="candidateMsgUpdate" class="h3 text-center hidden"></div>
+                                        <div th:unless="${candidate.candidateId}" id="candidateMsgSave" class="h3 text-center hidden"></div>
                                     </div>
                                 </form>
                             </div> <!-- end of form container -->
@@ -109,7 +89,6 @@
 
                         </div> <!-- end of col--> 
                     </div> <!-- end of row -->
-                    <a class="btn-outline-reg back" href="index.html">BACK</a>
                 </div> <!-- end of col-->
             </div> <!-- end of row -->
         </div> <!-- end of container -->

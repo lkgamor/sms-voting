@@ -149,85 +149,6 @@
 		}
     });
 
-    
-    /* Video Lightbox - Magnific Popup */
-    $('.popup-youtube, .popup-vimeo').magnificPopup({
-        disableOn: 700,
-        type: 'iframe',
-        mainClass: 'mfp-fade',
-        removalDelay: 160,
-        preloader: false,
-        fixedContentPos: false,
-        iframe: {
-            patterns: {
-                youtube: {
-                    index: 'youtube.com/', 
-                    id: function(url) {        
-                        var m = url.match(/[\\?\\&]v=([^\\?\\&]+)/);
-                        if ( !m || !m[1] ) return null;
-                        return m[1];
-                    },
-                    src: 'https://www.youtube.com/embed/%id%?autoplay=1'
-                },
-                vimeo: {
-                    index: 'vimeo.com/', 
-                    id: function(url) {        
-                        var m = url.match(/(https?:\/\/)?(www.)?(player.)?vimeo.com\/([a-z]*\/)*([0-9]{6,11})[?]?.*/);
-                        if ( !m || !m[5] ) return null;
-                        return m[5];
-                    },
-                    src: 'https://player.vimeo.com/video/%id%?autoplay=1'
-                }
-            }
-        }
-    });
-
-
-    /* Lightbox - Magnific Popup */
-	$('.popup-with-move-anim').magnificPopup({
-		type: 'inline',
-		fixedContentPos: false, /* keep it false to avoid html tag shift with margin-right: 17px */
-		fixedBgPos: true,
-		overflowY: 'auto',
-		closeBtnInside: true,
-		preloader: false,
-		midClick: true,
-		removalDelay: 300,
-		mainClass: 'my-mfp-slide-bottom'
-	});
-    
-
-    /* Counter - CountTo */
-	var a = 0;
-	$(window).scroll(function() {
-		if ($('#counter').length) { // checking if CountTo section exists in the page, if not it will not run the script and avoid errors	
-			var oTop = $('#counter').offset().top - window.innerHeight;
-			if (a == 0 && $(window).scrollTop() > oTop) {
-			$('.counter-value').each(function() {
-				var $this = $(this),
-				countTo = $this.attr('data-count');
-				$({
-				countNum: $this.text()
-				}).animate({
-					countNum: countTo
-				},
-				{
-					duration: 2000,
-					easing: 'swing',
-					step: function() {
-					$this.text(Math.floor(this.countNum));
-					},
-					complete: function() {
-					$this.text(this.countNum);
-					//alert('finished');
-					}
-				});
-			});
-			a = 1;
-			}
-		}
-    });
-
 
     /* Move Form Fields Label When User Types */
     // for input and textarea fields
@@ -239,136 +160,139 @@
 		}
     });
 
-
-    /* Contact Form */
-    $("#contactForm").validator().on("submit", function(event) {
+    /* Candidate Form */
+    $("#candidateForm").validator().on("submit", function(event) {
     	if (event.isDefaultPrevented()) {
             // handle the invalid form...
-            cformError();
-            csubmitMSG(false, "Please fill all fields!");
+            candidateFormError();
+            $("#candidateId").val() === "" && candidateSubmitSaveMSG(false, "Please fill all fields!");
+            $("#candidateId").val() !== "" && candidateSubmitUpdateMSG(false, "Please fill all fields!");
         } else {
             // everything looks good!
             event.preventDefault();
-            csubmitForm();
+            $("#candidateId").val() === "" && candidateSaveForm();
+            $("#candidateId").val() !== "" && candidateUpdateForm();        
         }
     });
-
-    function csubmitForm() {
+    
+    function candidateSaveForm() {
         // initiate variables with form content
-		var name = $("#cname").val();
-		var email = $("#cemail").val();
-        var image = $("#cmessage").val();
-        
+    	let byteImage = null;
+		let name = $("#candidateName").val();
+		let email = $("#candidateEmail").val();
+		let image = $('#cpicture').prop('files')[0];   
+
+        if(image !== undefined)	{
+        	let reader = new FileReader();
+        	reader.readAsArrayBuffer(image);
+        	reader.onload = function (evt) {  
+        		let imageByte = new Uint8Array(evt.target.result);            
+        		byteImage = Object.values(imageByte);
+        		submitSaveForm(name, email, byteImage);
+        	};
+        }
+        else submitSaveForm(name, email, byteImage);
+	}
+
+    function candidateUpdateForm() {
+        // initiate variables with form content
+    	let byteImage = null;
+		let name = $("#candidateName").val();
+		let email = $("#candidateEmail").val();
+		let image = $('#cpicture').prop('files')[0];   
+
+        if(image !== undefined)	{
+        	let reader = new FileReader();
+        	reader.readAsArrayBuffer(image);
+        	reader.onload = function (evt) {  
+        		let imageByte = new Uint8Array(evt.target.result);            
+        		byteImage = Object.values(imageByte);
+        		submitUpdateForm(name, email, byteImage);
+        	};
+        }
+        else submitUpdateForm(name, email, byteImage);
+	}
+    
+    function submitSaveForm(...params) {
         let newCandidate = {
-        		"candidateName": name,
-        		"candidateEmail": email,
-        		"candidateImage": image
+        	"candidateName": params[0],
+        	"candidateEmail": params[1],
+        	"candidateImage": params[2]
         };
         
         $.ajax({
             type: "POST",
             url: "api/v1/candidate",
-            data: newCandidate, 
+            contentType: "application/json",
+            data: JSON.stringify(newCandidate), 
             success: function(text) {
-                cformSuccess();
+            	candidateFormSaveSuccess();
             },
-            error: function() {
-                cformError();
-                csubmitMSG(false, text);
+            error: function(jqXHR, textStatus, errorThrown) {
+            	candidateFormError();
+            	candidateSubmitSaveMSG(false, jqXHR.responseJSON.error);
             }
         });
-	}
-
-    function cformSuccess() {
-        $("#contactForm")[0].reset();
-        csubmitMSG(true, "Message Submitted!");
-        $("input").removeClass('notEmpty'); // resets the field label after submission
-        $("textarea").removeClass('notEmpty'); // resets the field label after submission
-    }
-
-    function cformError() {
-        $("#contactForm").removeClass().addClass('shake animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
-            $(this).removeClass();
-        });
-	}
-
-    function csubmitMSG(valid, msg) {
-        if (valid) {
-            var msgClasses = "h3 text-center tada animated";
-        } else {
-            var msgClasses = "h3 text-center";
-        }
-        $("#cmsgSubmit").removeClass().addClass(msgClasses).text(msg);
-    }
-
-
-    /* Privacy Form */
-    $("#privacyForm").validator().on("submit", function(event) {
-    	if (event.isDefaultPrevented()) {
-            // handle the invalid form...
-            pformError();
-            psubmitMSG(false, "Please fill all fields!");
-        } else {
-            // everything looks good!
-            event.preventDefault();
-            psubmitForm();
-        }
-    });
-
-    function psubmitForm() {
-        // initiate variables with form content
-		var name = $("#cname").val();
-		var email = $("#cemail").val();
-        //var select = $("#pselect").val();
-        
-        $.ajax({
-            type: "POST",
-            url: "php/privacyform-process.php",
-            data: "name=" + name + "&email=" + email + "&select=" + select + "&terms=" + terms, 
-            success: function(text) {
-                if (text == "success") {
-                    pformSuccess();
-                } else {
-                    pformError();
-                    psubmitMSG(false, text);
-                }
-            }
-        });
-	}
-
-    function pformSuccess() {
-        $("#privacyForm")[0].reset();
-        psubmitMSG(true, "Request Submitted!");
-        $("input").removeClass('notEmpty'); // resets the field label after submission
-    }
-
-    function pformError() {
-        $("#privacyForm").removeClass().addClass('shake animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
-            $(this).removeClass();
-        });
-	}
-
-    function psubmitMSG(valid, msg) {
-        if (valid) {
-            var msgClasses = "h3 text-center tada animated";
-        } else {
-            var msgClasses = "h3 text-center";
-        }
-        $("#pmsgSubmit").removeClass().addClass(msgClasses).text(msg);
     }
     
+    
+    function submitUpdateForm(...params) {
+        let existingCandidate = {
+        	"candidateName": params[0],
+        	"candidateEmail": params[1],
+        	"candidateImage": params[2]
+        };
+        
+        $.ajax({
+            type: "PUT",
+            url: "api/v1/candidate/" + $("#candidateId").val(),
+            contentType: "application/json",
+            data: JSON.stringify(existingCandidate), 
+            success: function(text) {
+            	candidateFormUpdateSuccess();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+            	candidateFormError();
+            	candidateSubmitUpdateMSG(false, jqXHR.responseJSON.error);
+            }
+        });
+    }
+    
+    function candidateFormSaveSuccess() {
+        $("#candidateForm")[0].reset();
+        $("#candidateForm").addClass('w-50 m-auto');
+        candidateSubmitSaveMSG(true, "Candidate Registered!");
+        $("input").removeClass('notEmpty'); // resets the field label after submission
+    }
+    
+    function candidateFormUpdateSuccess() {
+        $("#candidateForm")[0].reset();
+        $("#candidateForm").addClass('w-50 m-auto');
+        candidateSubmitUpdateMSG(true, "Candidate Details Updated!");
+        $("input").removeClass('notEmpty'); // resets the field label after submission
+    }
 
-    /* Back To Top Button */
-    // create the back to top button
-    $('body').prepend('<a href="body" class="back-to-top page-scroll">Back to Top</a>');
-    var amountScrolled = 700;
-    $(window).scroll(function() {
-        if ($(window).scrollTop() > amountScrolled) {
-            $('a.back-to-top').fadeIn('500');
+    function candidateFormError() {
+        $("#candidateForm").removeClass().addClass('shake animated w-50 m-auto').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+            $(this).removeClass();
+        });
+	}
+
+    function candidateSubmitSaveMSG(valid, msg) {
+    	if (valid) {
+            swal({type: 'success', title: 'Success', text: 'Candidate Registered', showConfirmButton: false, timer: 2000});
         } else {
-            $('a.back-to-top').fadeOut('500');
+            swal({type: 'error', title: 'Error..', text: msg, showConfirmButton: false, timer: 2000});
         }
-    });
+    }
+    
+    function candidateSubmitUpdateMSG(valid, msg) {
+        if (valid) {
+            swal({type: 'success', title: 'Success', text: 'Candidate Updated', showConfirmButton: false, timer: 2000});
+        } else {
+            swal({type: 'error', title: 'Error..', text: msg, showConfirmButton: false, timer: 2000});
+        }
+    }
 
 
 	/* Removes Long Focus On Buttons */

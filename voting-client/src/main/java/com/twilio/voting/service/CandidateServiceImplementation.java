@@ -32,20 +32,24 @@ public class CandidateServiceImplementation implements CandidateService{
 	}
 
 	@Override
-	public Optional<Candidate> FetchCandidateDetailsById(String candidateId) {
+	public Candidate FetchCandidateDetailsById(String candidateId) {
 		
 		Optional<Candidate> retrievedCandidate = candidateRepository.findByCandidateId(candidateId);
 		//Check whether retrievedCandidate has an image attachment
 		if(retrievedCandidate.get().getCandidateImage() != null) {
+			System.out.println(retrievedCandidate.get().getCandidateName() + " has a picture");
+			System.out.println("BEFORE DECOMPRESSION => " + retrievedCandidate.get().getCandidateImage());
 			byte[] candidateImage = decompressImage(retrievedCandidate.get().getCandidateImage());
+			System.out.println("AFTER DECOMPRESSION => " + candidateImage);
 			retrievedCandidate.get().setCandidateImage(candidateImage);
 		}
-		return retrievedCandidate;
+		System.out.println(retrievedCandidate.get());
+		return retrievedCandidate.get();
 	}
 	
 	@Override
-	public Optional<Candidate> FetchCandidateDetailsByName(String candidateName) {
-		return candidateRepository.findByCandidateName(candidateName);
+	public Candidate FetchCandidateDetailsByName(String candidateName) {
+		return candidateRepository.findByCandidateName(candidateName).get();
 	}
 
 	@Override
@@ -59,7 +63,9 @@ public class CandidateServiceImplementation implements CandidateService{
 		
 		//Check whether user supplied an image attachment
 		if(candidate.getCandidateImage() != null) {
+			System.out.println("BEFORE COMPRESSION => " + candidate.getCandidateImage());
 			byte[] candidateImage = compressImage(candidate.getCandidateImage());
+			System.out.println("AFTER COMPRESSION => " + candidateImage);
 			candidate.setCandidateImage(candidateImage);
 		}
 		candidateRepository.save(candidate);

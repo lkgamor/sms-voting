@@ -1,7 +1,6 @@
 package com.twilio.voting.interfaces;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -14,9 +13,9 @@ public interface CandidateService {
 
 	List<Candidate> FetchAllCandidates();
 	
-	Optional<Candidate> FetchCandidateDetailsById(String candidateId);
+	Candidate FetchCandidateDetailsById(String candidateId);
 	
-	Optional<Candidate> FetchCandidateDetailsByName(String candidateName);
+	Candidate FetchCandidateDetailsByName(String candidateName);
 	
 	void RegisterCandidate(Candidate candidate);
 	
