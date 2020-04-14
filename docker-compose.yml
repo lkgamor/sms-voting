@@ -4,7 +4,6 @@ services:
   voting-client:
     image: louisga/sms-voting:latest
     container_name: voting-app
-    restart: always
     environment:
       - TRIAL_NUMBER='+12097944767'
       - AUTH_TOKEN=2c17fdd5899819385f5b7ce0661ce061

@@ -11,7 +11,6 @@ COPY voting-client/pom.xml .
 RUN mvn dependency:go-offline -B
 
 #Copy all required files and folders to working directory
-COPY voting-client/flyway.properties .
 COPY voting-client/src ./src
 
 #Build application binary
