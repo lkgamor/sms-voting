@@ -45,6 +45,6 @@ Clone this repository and navigate into the `sms-voting` project directory.
     Password: password
     ```
 
-## Connecting to Application Database
+## Connecting to Application UI
 1. Open your web bowser of choice and go to the address `http://localhost:9000`
 2. Navigate to the new candidates page to create your candidates.
