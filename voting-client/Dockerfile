@@ -5,7 +5,7 @@ FROM maven:3.6-jdk-11 AS maven-dependencies
 WORKDIR /build
 
 #Copy project pom file to working directory
-COPY ./pom.xml .
+COPY voting-client/pom.xml .
 
 #Build and cache all dependencies
 RUN mvn dependency:go-offline -B
