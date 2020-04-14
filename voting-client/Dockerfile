@@ -5,14 +5,14 @@ FROM maven:3.6-jdk-11 AS maven-dependencies
 WORKDIR /build
 
 #Copy project pom file to working directory
-COPY pom.xml .
+COPY ./pom.xml .
 
 #Build and cache all dependencies
 RUN mvn dependency:go-offline -B
 
 #Copy all required files and folders to working directory
-COPY flyway.properties .
-COPY src ./src
+COPY ./flyway.properties .
+COPY ./src ./src
 
 #Build application binary
 RUN mvn clean package -DskipTests
