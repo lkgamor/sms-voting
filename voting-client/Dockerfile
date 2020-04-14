@@ -23,8 +23,10 @@ FROM openjdk:11-jre-slim
 #Set project deployment directory
 WORKDIR /voting-app
 
+RUN ls
+
 #Copy over built artifacts from maven-dependencies
-COPY --from=maven-dependencies target/voting.jar ./
+COPY --from=maven-dependencies build/target/voting.jar ./
 
 EXPOSE 9000
 
