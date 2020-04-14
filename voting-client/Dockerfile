@@ -1,6 +1,6 @@
 FROM openjdk:latest
 
-COPY target/voting.jar voting.jar
+COPY ./sms-voting/voting-client/target/voting.jar voting.jar
 
 EXPOSE 9000
 
