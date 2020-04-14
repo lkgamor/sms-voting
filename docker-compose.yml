@@ -2,7 +2,7 @@ version: '3'
 
 services:
   voting-client:
-    image: louisga/voting-client:1.0
+    image: louisga/sms-voting:latest
     container_name: voting-app
     restart: always
     environment:
