@@ -9,7 +9,7 @@ services:
       - AUTH_TOKEN=2c17fdd5899819385f5b7ce0661ce061
       - ACCOUNT_SID=ACee48e97cdf4dc53f47b7196111bdf146
       - SPRING_DATASOURCE_USER=root
-      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_DATASOURCE_PASSWORD=twilio_pwd
       - SPRING_DATASOURCE_URL=jdbc:mysql://voting-database:3306/votes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true&serverTimezone=UTC
     depends_on:
       - voting-database
@@ -23,7 +23,7 @@ services:
     container_name: voting-db
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=twilio_pwd
       - MYSQL_DATABASE=votes
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=admin
