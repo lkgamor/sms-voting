@@ -4,7 +4,7 @@ Using Twilio, Spring-boot, and MySQL to build a WebApp for Voting
 
 # Introduction
 
-This repository contains a sample project on how to vote for candidates in an election using Spring-boot Twilio's SMS API.
+This repository contains a sample project on how to vote for candidates in an election using Spring-boot and Twilio's SMS API.
 
 
 # To test this Application
