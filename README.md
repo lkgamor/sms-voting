@@ -4,7 +4,7 @@ Using Twilio, Spring-boot, and MySQL to build a WebApp for Voting
 
 # Introduction
 
-This repository contains a sample project on how to vote for candidates in an election using Twilio's SMS API.
+This repository contains a sample project on how to vote for candidates in an election using Spring-boot Twilio's SMS API.
 
 
 # To test this Application
@@ -28,7 +28,7 @@ Clone this repository and navigate into the `sms-voting` project directory.
     ```
     docker exec -it voting-db /bin/bash
     > mysql -uroot -p
-    > enter password 'password'
+    > enter password 'twilio_pwd'
     > use table votes;
     
     query the table 'candidate' to view the candidates you will create from the webapp
@@ -42,7 +42,7 @@ Clone this repository and navigate into the `sms-voting` project directory.
     Hostname: <your ip address>
     Port: 3306
     Username: root
-    Password: password
+    Password: twilio_pwd
     ```
 
 ## Connecting to Application UI

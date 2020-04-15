@@ -18,13 +18,13 @@ public class AppController {
 
 	@GetMapping({"/", "/voting"})
 	String getIndexpage() {
-		return "/pages/index";
+		return "pages/index";
 	}
 	
 	@GetMapping("/candidate")
 	String getNewCandidatePage(Candidate candidate, Model model) {
 		model.addAttribute("pageTitle", "Add A New Candidate");
-		return "/pages/candidate";
+		return "pages/candidate";
 	}
 	
 	@GetMapping("/candidates")
@@ -33,6 +33,6 @@ public class AppController {
 		Candidate candidateToUpdate = candidateRestController.FetchCandidateDetails(candidateId);
 		model.addAttribute("candidate", candidateToUpdate);
 		model.addAttribute("pageTitle", "Update Candidate");
-		return "/pages/candidate";
+		return "pages/candidate";
 	}
 }
