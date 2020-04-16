@@ -4,7 +4,6 @@
    Description: Custom JS file
 */
 
-
 (function($) {
     "use strict"; 
 	
@@ -222,7 +221,7 @@
         
         $.ajax({
             type: "POST",
-            url: "api/v1/candidate",
+            url: "/api/v1/candidate",
             contentType: "application/json",
             data: JSON.stringify(newCandidate), 
             success: function(text) {
@@ -245,7 +244,7 @@
         
         $.ajax({
             type: "PUT",
-            url: "api/v1/candidate/" + $("#candidateId").val(),
+            url: "/api/v1/candidate/" + $("#candidateId").val(),
             contentType: "application/json",
             data: JSON.stringify(existingCandidate), 
             success: function(text) {
