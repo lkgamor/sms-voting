@@ -271,6 +271,7 @@ body.stop-scrolling {
   width: 120px;
   cursor: pointer;
   border-radius: 2rem;
+  padding: 0.2rem 1rem;
   background-color: #1f3549!important;
 }
 .sweet-alert .la-ball-fall {

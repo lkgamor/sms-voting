@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.twilio.voting.interfaces.CandidateService;
 import com.twilio.voting.model.Candidate;
+import com.twilio.voting.model.CandidateSave;
 
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +36,18 @@ public class CandidateRestController {
 	}
 	
 	@PostMapping()
-	public void RegisterCandidate(@RequestBody Candidate candidate) {
-		candidateService.RegisterCandidate(candidate);
+	public void RegisterCandidate(@RequestBody CandidateSave candidateToSave) {
+		candidateService.RegisterCandidate(candidateToSave);
 	}
 	
 	@PutMapping("/{candidateId}")
-	public void UpdateCandidateInfo(@PathVariable String candidateId, @RequestBody Candidate candidate) throws NotFoundException {
-		candidateService.UpdateCandidate(candidateId, candidate);
+	public void UpdateCandidateInfo(@PathVariable String candidateId, @RequestBody CandidateSave candidateToUpdate) throws NotFoundException {
+		candidateService.UpdateCandidate(candidateId, candidateToUpdate);
+	}
+	
+	@DeleteMapping("/{candidateId}/image")
+	public void RemoveCandidateImage(@PathVariable String candidateId) throws NotFoundException {
+		candidateService.RemoveCandidateImage(candidateId);
 	}
 	
 	@DeleteMapping("/{candidateId}")

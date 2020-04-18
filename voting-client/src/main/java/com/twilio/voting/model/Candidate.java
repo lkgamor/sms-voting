@@ -25,9 +25,10 @@ public class Candidate implements Serializable {
 	private String candidateEmail;
 	
 	@Column(name="candidate_image")
-	private byte[] candidateImage;
+	private String candidateImage;
 
 	@Column(name="total_vote_count")
-	private Integer totalVoteCount;	
+	private Integer totalVoteCount;
 
+	
 }

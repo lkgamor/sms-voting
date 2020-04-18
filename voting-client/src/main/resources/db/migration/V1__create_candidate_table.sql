@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `votes`.`candidate` (
   `candidate_id` VARCHAR(36) NOT NULL,
   `candidate_name` VARCHAR(50) NOT NULL,
   `candidate_email` VARCHAR(60),
-  `candidate_image` LONGBLOB,
+  `candidate_image` VARCHAR(255),
   `total_vote_count` INT(5) NOT NULL,
   PRIMARY KEY (`candidate_id`),
   UNIQUE INDEX `candidate_id_UNIQUE` (`candidate_id` ASC),

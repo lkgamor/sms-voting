@@ -18,7 +18,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	@Transactional
 	@Modifying(clearAutomatically = true)
 	@Query(value = "UPDATE Candidate c set c.candidateName =:candidateName, c.candidateEmail =:candidateEmail, c.candidateImage =:candidateImage WHERE c.candidateId = :id")
-	void updateCandidateInfo(String id, String candidateName, String candidateEmail, byte[] candidateImage);
+	void updateCandidateInfo(String id, String candidateName, String candidateEmail, String candidateImage);
 	
 	@Transactional
 	@Modifying(clearAutomatically = true)
@@ -33,4 +33,9 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	@Transactional
 	@Modifying(clearAutomatically = true)
 	void deleteByCandidateId(String id);
+	
+	@Transactional
+	@Modifying(clearAutomatically = true)
+	@Query(value = "UPDATE Candidate c set c.candidateImage ='' WHERE c.candidateId = :id")
+	void deleteCandidateImage(String id);
 }

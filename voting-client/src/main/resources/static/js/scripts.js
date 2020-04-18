@@ -7,6 +7,10 @@
 (function($) {
     "use strict"; 
 	
+    NProgress.configure({
+		showSpinner : false
+	});
+    
 	/* Preloader */
 	$(window).on('load', function() {
 		var preloaderFadeOutTime = 500;
@@ -159,6 +163,35 @@
 		}
     });
 
+    $("#clear-candidate-image").on("click", ()=> {
+    	swal({
+    		type: 'info', 
+    		title: 'Remove Picture?',
+    		showConfirmButton: true, 
+    		showCancelButton: true,
+    		confirmButtonText: 'Yes!'
+    	});
+    	$('.confirm').on('click', ()=> {
+	    	$.ajax({
+	            type: "DELETE",
+	            url: "/api/v1/candidate/" + $("#candidateId").val() + "/image",
+	            beforeSend: function() {
+	                startProgressAction();
+	            },
+	            success: function() {
+	            	 $('#candidate-image').attr("src", '/images/candidate.svg');
+	            	 swal({type: 'success', title: 'Picture Removed!', showConfirmButton: false, timer: 2000});
+	            },
+	            error: function() {
+	            	swal({type: 'error', title: 'Oops', text: "Unable to remove candidate's picture at the moment!", showConfirmButton: false, timer: 3000});
+	            },
+	            complete: ()=> {
+	            	stopProgressAction();
+	            }
+	        });
+    	});
+    });
+    
     /* Candidate Form */
     $("#candidateForm").validator().on("submit", function(event) {
     	if (event.isDefaultPrevented()) {
@@ -176,83 +209,117 @@
     
     function candidateSaveForm() {
         // initiate variables with form content
-    	let byteImage = null;
+		let imageName = ""; 
+		let imageType = ""; 
+		let imageSize = "";
+    	let imageData = null;
 		let name = $("#candidateName").val();
 		let email = $("#candidateEmail").val();
-		let image = $('#cpicture').prop('files')[0];   
-
+		let image = $('#cpicture').prop('files')[0];
+		
         if(image !== undefined)	{
+    		imageName = image.name;
+    		imageType = image.type;
+    		imageSize = image.size;
         	let reader = new FileReader();
         	reader.readAsArrayBuffer(image);
         	reader.onload = function (evt) {  
         		let imageByte = new Uint8Array(evt.target.result);            
-        		byteImage = Object.values(imageByte);
-        		submitSaveForm(name, email, byteImage);
+        		imageData = Object.values(imageByte);
+        		submitSaveForm(name, email, imageName, imageType, imageSize, imageData);
         	};
         }
-        else submitSaveForm(name, email, byteImage);
-	}
-
-    function candidateUpdateForm() {
-        // initiate variables with form content
-    	let byteImage = null;
-		let name = $("#candidateName").val();
-		let email = $("#candidateEmail").val();
-		let image = $('#cpicture').prop('files')[0];   
-
-        if(image !== undefined)	{
-        	let reader = new FileReader();
-        	reader.readAsArrayBuffer(image);
-        	reader.onload = function (evt) {  
-        		let imageByte = new Uint8Array(evt.target.result);            
-        		byteImage = Object.values(imageByte);
-        		submitUpdateForm(name, email, byteImage);
-        	};
-        }
-        else submitUpdateForm(name, email, byteImage);
+        else submitSaveForm(name, email, imageName, imageType, imageSize, imageData);
 	}
     
     function submitSaveForm(...params) {
-        let newCandidate = {
+        let candidateData = {
         	"candidateName": params[0],
         	"candidateEmail": params[1],
-        	"candidateImage": params[2]
+        	"candidateImage": {
+        		"name": params[2],
+        		"type": params[3],
+        		"size": params[4],
+        		"data": params[5]
+        	}
         };
-        
+
         $.ajax({
             type: "POST",
             url: "/api/v1/candidate",
             contentType: "application/json",
-            data: JSON.stringify(newCandidate), 
-            success: function(text) {
+            data: JSON.stringify(candidateData), 
+            beforeSend: function() {
+                startProgressAction();
+            },
+            success: function() {
             	candidateFormSaveSuccess();
             },
             error: function(jqXHR, textStatus, errorThrown) {
             	candidateFormError();
             	candidateSubmitSaveMSG(false, jqXHR.responseJSON.error);
+            },
+            complete: ()=> {
+            	stopProgressAction();
             }
         });
     }
     
+
+    function candidateUpdateForm() {
+        // initiate variables with form content
+		let imageName = ""; 
+		let imageType = ""; 
+		let imageSize = "";
+    	let imageData = null;
+		let name = $("#candidateName").val();
+		let email = $("#candidateEmail").val();
+		let image = $('#cpicture').prop('files')[0];
+		
+        if(image !== undefined)	{
+    		imageName = image.name;
+    		imageType = image.type;
+    		imageSize = image.size;
+        	let reader = new FileReader();
+        	reader.readAsArrayBuffer(image);
+        	reader.onload = function (evt) {  
+        		let imageByte = new Uint8Array(evt.target.result);            
+        		imageData = Object.values(imageByte);
+        		submitUpdateForm(name, email, imageName, imageType, imageSize, imageData);
+        	};
+        }
+        else submitUpdateForm(name, email, imageName, imageType, imageSize, imageData);
+	}
     
     function submitUpdateForm(...params) {
         let existingCandidate = {
-        	"candidateName": params[0],
-        	"candidateEmail": params[1],
-        	"candidateImage": params[2]
+            "candidateName": params[0],
+            "candidateEmail": params[1],
+            "candidateImage": {
+            	"name": params[2],
+            	"type": params[3],
+            	"size": params[4],
+            	"data": params[5]
+            }
         };
-        
+
         $.ajax({
             type: "PUT",
             url: "/api/v1/candidate/" + $("#candidateId").val(),
             contentType: "application/json",
             data: JSON.stringify(existingCandidate), 
-            success: function(text) {
-            	candidateFormUpdateSuccess();
+            beforeSend: function() {
+                startProgressAction();
+            },
+            success: function() {
+            	candidateFormUpdateSuccess(params[0], params[1], params[2], params[5]);
             },
             error: function(jqXHR, textStatus, errorThrown) {
             	candidateFormError();
             	candidateSubmitUpdateMSG(false, jqXHR.responseJSON.error);
+            },
+            complete: ()=> {
+            	stopProgressAction();
             }
         });
     }
@@ -264,11 +331,14 @@
         $("input").removeClass('notEmpty'); // resets the field label after submission
     }
     
-    function candidateFormUpdateSuccess() {
-        $("#candidateForm")[0].reset();
+    function candidateFormUpdateSuccess(candidateName, candidateEmail, imageName, imageUploaded) { 
+    	$("#candidateName").val(candidateName);
+    	$("#candidateEmail").val(candidateEmail);
         $("#candidateForm").addClass('w-50 m-auto');
         candidateSubmitUpdateMSG(true, "Candidate Details Updated!");
         $("input").removeClass('notEmpty'); // resets the field label after submission
+    	
+    	imageUploaded !== null && $('#candidate-image').attr("src", `/images/candidates/${imageName}`);
     }
 
     function candidateFormError() {
@@ -293,10 +363,61 @@
         }
     }
 
+    
+    function startProgressAction() {
+		NProgress.start();
+		$('input').attr('readonly','readonly');
+		$('button').attr('disabled', 'disable');
+		$('button').addClass('not-allowed');
+    }
+
+    
+    function stopProgressAction() {
+		NProgress.done();
+		NProgress.remove();
+		$('input').removeAttr('readonly');
+		$('button').removeAttr('disabled');
+		$('button').removeClass('not-allowed');
+    }
 
 	/* Removes Long Focus On Buttons */
 	$(".button, a, button").mouseup(function() {
 		$(this).blur();
 	});
 
+	/*function submitSaveForm() {
+		var form = $('#candidateForm')[0];
+		var data = new FormData(form);
+        var jsonDataObj = {
+        	"name": $("#name").val(),
+            "designation" : $("#designation").val()
+        };
+        data.append("empJson", JSON.stringify(jsonDataObj));
+        $("#btnSubmit").prop("disabled", true);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: "/employees",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+              
+                console.log("SUCCESS : ", data);
+                $("#btnSubmit").prop("disabled", false);
+                $(".alert-success").show();
+                $(".alert-danger").hide();
+                getEmployeeDetails();
+                
+            },
+            error: function (e) {
+            	 $(".alert-success").hide();
+                 $(".alert-danger").show();
+                console.log("ERROR : ", e);
+                $("#btnSubmit").prop("disabled", false);
+            }
+        });
+	}*/
 })(jQuery);

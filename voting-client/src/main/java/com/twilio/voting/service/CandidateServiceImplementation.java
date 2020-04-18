@@ -1,35 +1,42 @@
 package com.twilio.voting.service;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ResourceUtils;
 
 import com.twilio.voting.interfaces.CandidateService;
 import com.twilio.voting.model.Candidate;
+import com.twilio.voting.model.CandidateImage;
+import com.twilio.voting.model.CandidateSave;
 import com.twilio.voting.repository.CandidateRepository;
 
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CandidateServiceImplementation implements CandidateService{
 
 	private final CandidateRepository candidateRepository;
-
+	private static final String FILE_TYPE_PNG = "image/png";
+	private static final String FILE_TYPE_JPG = "image/jpg";
+	private static final String FILE_TYPE_JPEG = "image/jpeg";
+	
+	
 	@Override
 	public List<Candidate> FetchAllCandidates() {
 		return candidateRepository.findAll();
 	}
+	
 
 	@Override
 	public Candidate FetchCandidateDetailsById(String candidateId) {
@@ -37,103 +44,116 @@ public class CandidateServiceImplementation implements CandidateService{
 		Optional<Candidate> retrievedCandidate = candidateRepository.findByCandidateId(candidateId);
 		//Check whether retrievedCandidate has an image attachment
 		if(retrievedCandidate.get().getCandidateImage() != null) {
-			System.out.println(retrievedCandidate.get().getCandidateName() + " has a picture");
-			System.out.println("BEFORE DECOMPRESSION => " + retrievedCandidate.get().getCandidateImage());
-			byte[] candidateImage = decompressImage(retrievedCandidate.get().getCandidateImage());
-			System.out.println("AFTER DECOMPRESSION => " + candidateImage);
-			retrievedCandidate.get().setCandidateImage(candidateImage);
+			/*
+			 * byte[] candidateImage =
+			 * decompressImage(retrievedCandidate.get().getCandidateImage());
+			 * retrievedCandidate.get().setCandidateImage(candidateImage);
+			 */
 		}
-		System.out.println(retrievedCandidate.get());
 		return retrievedCandidate.get();
 	}
+	
 	
 	@Override
 	public Candidate FetchCandidateDetailsByName(String candidateName) {
 		return candidateRepository.findByCandidateName(candidateName).get();
 	}
 
+	
 	@Override
-	public void RegisterCandidate(Candidate candidate) {
+	public void RegisterCandidate(CandidateSave candidateToSave) {
 
+		//Create New Candidate Instance
+		Candidate candidate = new Candidate();
+		
 		//Generate Random UUIDv4 for Candidate
 		UUID candidateUUID = UUID.randomUUID(); 
 		
+		//Set Values For Candidate's Fields
 		candidate.setCandidateId(candidateUUID.toString());
+		candidate.setCandidateName(candidateToSave.getCandidateName());
+		candidate.setCandidateEmail(candidateToSave.getCandidateEmail());
 		candidate.setTotalVoteCount(0);
 		
-		//Check whether user supplied an image attachment
-		if(candidate.getCandidateImage() != null) {
-			System.out.println("BEFORE COMPRESSION => " + candidate.getCandidateImage());
-			byte[] candidateImage = compressImage(candidate.getCandidateImage());
-			System.out.println("AFTER COMPRESSION => " + candidateImage);
-			candidate.setCandidateImage(candidateImage);
+		//Get Image byte Data
+		byte[] candidateImageData = candidateToSave.getCandidateImage().getData();
+		
+		//Check Whether User Supplied An Image
+		if(candidateImageData != null) {
+
+			String candidateImageName = candidateToSave.getCandidateImage().getName();
+			if(storeImage(candidateToSave.getCandidateImage())) 
+				candidate.setCandidateImage("/images/candidates/" + candidateImageName.replace(" ", "-"));
+			else 
+				candidate.setCandidateImage("");
 		}
 		candidateRepository.save(candidate);
 	}
 
-	private byte[] compressImage(byte[] data) {
+	
+	//Store Candidate's Image In Application's Images Folder
+	private Boolean storeImage(CandidateImage candidateImage) {		
 
-		Deflater deflater = new Deflater();
-		deflater.setInput(data);
-		deflater.finish();
+		//Get Image Info
+		byte[] candidateImageData = candidateImage.getData();
+		String candidateImageName = candidateImage.getName();
+		String candidateImageType = candidateImage.getType();
+		//Integer candidateImageSize = candidateImage.getSize();
+		
+		//Check if image is of expected format
+		if(candidateImageType.contains(FILE_TYPE_PNG) || candidateImageType.contains(FILE_TYPE_JPG) || candidateImageType.contains(FILE_TYPE_JPEG)) {
 
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-
-		byte[] buffer = new byte[1024];
-
-		while (!deflater.finished()) {
-			int count = deflater.deflate(buffer);
-			outputStream.write(buffer, 0, count);
+			try { 
+				File file = ResourceUtils.getFile("classpath:static/images/candidates/");
+				FileCopyUtils.copy(candidateImageData, new FileOutputStream(file.getAbsolutePath() + "/" + candidateImageName.replace(" ", "-"))); 
+				return true;
+			} 
+			catch (FileNotFoundException e) { 
+				e.printStackTrace();
+				return false;
+			} 
+			catch (IOException e) {
+				//TODO Auto-generated catch block 
+				e.printStackTrace(); 
+				return false;
+			}
 		}
-		try {
-			outputStream.close();
-		} catch (IOException e) {
+		else {
+			try {
+				throw new FileUploadException("INVALID IMAGE FORMAT. Please upload a '.png' or '.jpeg' image");
+			} catch (FileUploadException e) {
+				e.printStackTrace();
+			}
+			return false;
 		}
-
-		log.info("Compressed Image Byte Size - " + outputStream.toByteArray().length);
-		return outputStream.toByteArray();
 	}
 	
-	private byte[] decompressImage(byte[] data) {
-
-		Inflater inflater = new Inflater();		
-		inflater.setInput(data);
-
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-
-		byte[] buffer = new byte[1024];		
-		try {		
-			while (!inflater.finished()) {		
-				int count = inflater.inflate(buffer);		
-				outputStream.write(buffer, 0, count);		
-			}		
-			outputStream.close();		
-		} catch (IOException ioe) {
-
-		} catch (DataFormatException e) {
-
-		}
-
-		return outputStream.toByteArray();
-	}
 
 	@Override
-	public void UpdateCandidate(String candidateId, Candidate candidate) throws NotFoundException {
+	public void UpdateCandidate(String candidateId, CandidateSave candidateToUpdate) throws NotFoundException {
 		
-		Optional<Candidate> candidateToUpdate = candidateRepository.findByCandidateId(candidateId);
+		Optional<Candidate> candidate = candidateRepository.findByCandidateId(candidateId);
 		
 		//Check whether candidateToUpdate exists in our DB
-		if(candidateToUpdate.isPresent()) {
+		if(candidate.isPresent()) {
+
+			String candidateImage = "";
+			String candidateName = candidateToUpdate.getCandidateName();
+			String candidateEmail = candidateToUpdate.getCandidateEmail();
+
+			//Get Image byte Data
+			byte[] candidateImageData = candidateToUpdate.getCandidateImage().getData();
+			
 			//Check whether new candidate data from UI has an image attachment
-			if(candidate.getCandidateImage() != null) {
-				String candidateName = candidate.getCandidateName();
-				String candidateEmail = candidate.getCandidateEmail();
-				byte[] candidateImage = compressImage(candidate.getCandidateImage());
+			if(candidateImageData != null) {
+				
+				String candidateImageName = candidateToUpdate.getCandidateImage().getName();
+				if(storeImage(candidateToUpdate.getCandidateImage())) 
+					candidateImage = "/images/candidates/" + candidateImageName.replace(" ", "-");
+				
 				candidateRepository.updateCandidateInfo(candidateId, candidateName, candidateEmail, candidateImage);
 			}
 			else {
-				String candidateName = candidate.getCandidateName();
-				String candidateEmail = candidate.getCandidateEmail();
 				candidateRepository.updateCandidateNameAndEmail(candidateId, candidateName, candidateEmail);
 			}
 		}
@@ -142,10 +162,12 @@ public class CandidateServiceImplementation implements CandidateService{
 		}
 	}
 
+	
 	@Override
 	public void UpdateCandidateVotes(String candidateId, Integer votes) {
 		candidateRepository.updateCandidateVotes(candidateId, votes);		
 	}
+	
 	
 	@Override
 	public void RemoveCandidate(String candidateId) throws NotFoundException {
@@ -158,6 +180,12 @@ public class CandidateServiceImplementation implements CandidateService{
 		else {
 			throw new NotFoundException("No Candidate with ID [" + candidateId + "] to DELETE!");
 		}		
+	}
+
+
+	@Override
+	public void RemoveCandidateImage(String candidateId) {
+		candidateRepository.deleteCandidateImage(candidateId);
 	}
 	
 }

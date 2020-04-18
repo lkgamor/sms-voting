@@ -14,9 +14,17 @@ spring:
     open-in-view: false
     show-sql: true
   main:
-    allow-bean-definition-overriding: true  application:    name: MY VOTING APP
+    allow-bean-definition-overriding: true
+  application:
+    name: MY VOTING APP
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
 twilio:
   account_sid: ACee48e97cdf4dc53f47b7196111bdf146
   auth_token: 2c17fdd5899819385f5b7ce0661ce061
   trial_number: '+12097944767'
-  
+images-directory: /pixs/

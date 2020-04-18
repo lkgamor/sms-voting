@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.twilio.voting.model.Candidate;
+import com.twilio.voting.model.CandidateSave;
 
 import javassist.NotFoundException;
 
@@ -17,11 +18,13 @@ public interface CandidateService {
 	
 	Candidate FetchCandidateDetailsByName(String candidateName);
 	
-	void RegisterCandidate(Candidate candidate);
+	void RegisterCandidate(CandidateSave candidateToSave);
 	
-	void UpdateCandidate(String candidateId, Candidate candidate) throws NotFoundException;
+	void UpdateCandidate(String candidateId, CandidateSave candidateToUpdate) throws NotFoundException;
 	
 	void UpdateCandidateVotes(String candidateId, Integer votes);
 	
 	void RemoveCandidate(String candidateId) throws NotFoundException;
+
+	void RemoveCandidateImage(String candidateId);
 }

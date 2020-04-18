@@ -15,15 +15,16 @@
 					let id = candidate.candidateId;
 					let name = candidate.candidateName || 'N/A';
 					let votes = candidate.totalVoteCount;
+					let image = candidate.candidateImage || '/images/candidate.svg';
 					const CANDIDATE_CARD = `<div class="candidate__card">
 				                            <div class="candidate__image">
-				                            	<img alt="Candidate Picture" class="card-image" src="/images/candidate.svg">
+				                            	<img alt="Candidate Picture" class="card-image" src="${image}">
 				                            </div>
 				                            <div class="candidate__name">
 				                            	<h3>${name}</h3>
 				                            </div>
 				                            <div class="candidate__votes">
-				                            	<div class="counter-value number-count" data-count="85">${votes}</div>
+				                            	<div class="counter-value number-count">${votes}</div>
 				                            </div>
 				                            <div class="candidate__button">
 				                            	 <a class="btn-solid-lg page-scroll" href="/candidate/${id}">EDIT INFO</a>
