@@ -14,6 +14,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://voting-database:3306/votes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true&serverTimezone=UTC
     depends_on:
       - voting-database
+    volumes:
+      - voting-application:/var/lib/sms-voting
     networks:
       - voting-network
     ports:
@@ -30,7 +32,7 @@ services:
       - MYSQL_PASSWORD=admin
     command: mysqld --lower_case_table_names=1 --character_set_server=utf8 --default-authentication-plugin=mysql_native_password --explicit_defaults_for_timestamp=ON
     volumes: 
-      - mysql-database:/var/lib/mysql
+      - voting-database:/var/lib/mysql
     networks:
       - voting-network
     ports:
@@ -38,7 +40,8 @@ services:
 
 
 volumes:
-  mysql-database:
+  voting-database:
+  voting-application:
 
 networks:
   voting-network:

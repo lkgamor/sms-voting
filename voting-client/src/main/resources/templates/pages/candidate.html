@@ -44,9 +44,9 @@
                             <div class="form-container text-center" th:object="${candidate}">
                             	<input hidden="hidden" th:field="*{candidateId}">
                             	<div class="candidate__image mb-4">
-                            		<i class="fas fa-trash-alt" id="clear-candidate-image"></i>
-                            		<img th:if="${candidate.candidateImage} != ''" alt="Candidate Picture" class="candidate-image" id="candidate-image" th:src="@{${candidate.candidateImage}}">
-                            		<img th:if="${candidate.candidateImage} == ''" alt="Candidate Picture" class="candidate-image" id="candidate-image" th:src="@{/images/candidate.svg}">
+                            		<i th:if="${candidate.candidateImage != null}" class="fas fa-broom" id="clear-candidate-image" title="Remove candidate's picture"></i>
+                            		<img th:if="${candidate.candidateImage == null}" alt="Candidate Picture" class="candidate-image" id="candidate-image" th:src="@{/images/candidate.svg}">
+                            		<img th:unless="${candidate.candidateImage == null}" alt="Candidate Picture" class="candidate-image" id="candidate-image" th:src="@{${candidate.candidateImage}}">
                             	</div>
                                 <form class="w-50 m-auto" id="candidateForm" data-toggle="validator" data-focus="false">
                                     <div class="form-group">
@@ -74,7 +74,8 @@
                                 
                                 <!-- Candidates Total Votes Start -->
                                 <div class="candidate__votes candidate__details--votes">
-				                    <div class="counter-value number-count" th:text="${candidate.totalVoteCount}"></div>
+				                    <div class="counter-value number-count" th:if="${candidate.totalVoteCount == null}">N/A</div>
+				                    <div class="counter-value number-count" th:unless="${candidate.totalVoteCount == null}" th:text="${candidate.totalVoteCount}"></div>
 				                </div>
 				                <!-- Candidates Total Votes End -->            
                             </div> <!-- end of form container -->

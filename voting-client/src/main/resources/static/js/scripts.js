@@ -385,39 +385,66 @@
 		$(this).blur();
 	});
 
-	/*function submitSaveForm() {
-		var form = $('#candidateForm')[0];
-		var data = new FormData(form);
-        var jsonDataObj = {
-        	"name": $("#name").val(),
-            "designation" : $("#designation").val()
-        };
-        data.append("empJson", JSON.stringify(jsonDataObj));
-        $("#btnSubmit").prop("disabled", true);
-        $.ajax({
-            type: "POST",
-            enctype: 'multipart/form-data',
-            url: "/employees",
-            data: data,
-            processData: false,
-            contentType: false,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
-              
-                console.log("SUCCESS : ", data);
-                $("#btnSubmit").prop("disabled", false);
-                $(".alert-success").show();
-                $(".alert-danger").hide();
-                getEmployeeDetails();
-                
-            },
-            error: function (e) {
-            	 $(".alert-success").hide();
-                 $(".alert-danger").show();
-                console.log("ERROR : ", e);
-                $("#btnSubmit").prop("disabled", false);
-            }
-        });
-	}*/
+	$("#clear-candidate-image").on("click", ()=> {
+    	swal({
+    		type: 'info', 
+    		title: 'Remove Picture?',
+    		showConfirmButton: true, 
+    		showCancelButton: true,
+    		confirmButtonText: 'Yes!'
+    	});
+    	$('.confirm').on('click', ()=> {
+	    	$.ajax({
+	            type: "DELETE",
+	            url: "/api/v1/candidate/" + $("#candidateId").val() + "/image",
+	            beforeSend: function() {
+	                startProgressAction();
+	            },
+	            success: function() {
+	            	 $('#candidate-image').attr("src", '/images/candidate.svg');
+	            	 swal({type: 'success', title: 'Picture Removed!', showConfirmButton: false, timer: 2000});
+	            },
+	            error: function() {
+	            	swal({type: 'error', title: 'Oops', text: "Unable to remove candidate's picture at the moment!", showConfirmButton: false, timer: 3000});
+	            },
+	            complete: ()=> {
+	            	stopProgressAction();
+	            }
+	        });
+    	});
+    });
+	
+	
+	$("#delete-candidate").on("click", ()=> {
+    	swal({
+    		type: 'info', 
+    		title: 'Remove Candidate?',
+    		showConfirmButton: true, 
+    		showCancelButton: true,
+    		confirmButtonText: 'Yes!'
+    	});
+    	$('.confirm').on('click', ()=> {
+	    	$.ajax({
+	            type: "DELETE",
+	            url: "/api/v1/candidate/" + $("#candidateId").val(),
+	            beforeSend: function() {
+	                startProgressAction();
+	            },
+	            success: function() {
+
+	            	swal({type: 'success', title: 'Candidate Removed!', showConfirmButton: false, timer: 2000});
+	            	setTimeout(()=> {
+	            		window.location.href = '/candidate';
+	            	}, 2000);
+	            },
+	            error: function() {
+	            	swal({type: 'error', title: 'Oops', text: "Unable to remove candidate at the moment!", showConfirmButton: false, timer: 3000});
+	            },
+	            complete: ()=> {
+	            	stopProgressAction();
+	            }
+	        });
+    	});
+    });
+    
 })(jQuery);

@@ -1176,9 +1176,10 @@ input[type='checkbox'] {
 
 .candidate__image i::before {
     background: var(--app-dark-color);
-    padding: .7rem .8rem;
+    padding: .7rem .75rem;
     border-radius: 50%;
     box-shadow: 3px 3px 10px rgba(0,0,0,0.25);
+    transition: all 0.2s ease;
 }
 
 .candidate__image i:hover {
