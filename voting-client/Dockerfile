@@ -12,7 +12,6 @@ RUN mvn dependency:go-offline -B
 
 #Copy all required files and folders to working directory
 COPY voting-client/src ./src
-COPY voting-client/target/classes/static/images/candidates ./target/classes/static/images/candidates
 
 #Build application binary
 RUN mvn clean package -DskipTests
