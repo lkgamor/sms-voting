@@ -20,7 +20,7 @@ public interface CandidateService {
 	
 	void RegisterCandidate(CandidateSave candidateToSave);
 	
-	void UpdateCandidate(String candidateId, CandidateSave candidateToUpdate) throws NotFoundException;
+	Boolean UpdateCandidate(String candidateId, CandidateSave candidateToUpdate) throws NotFoundException;
 	
 	void UpdateCandidateVotes(String candidateId, Integer votes);
 	

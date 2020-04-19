@@ -41,8 +41,8 @@ public class CandidateRestController {
 	}
 	
 	@PutMapping("/{candidateId}")
-	public void UpdateCandidateInfo(@PathVariable String candidateId, @RequestBody CandidateSave candidateToUpdate) throws NotFoundException {
-		candidateService.UpdateCandidate(candidateId, candidateToUpdate);
+	public Boolean UpdateCandidateInfo(@PathVariable String candidateId, @RequestBody CandidateSave candidateToUpdate) throws NotFoundException {
+		return candidateService.UpdateCandidate(candidateId, candidateToUpdate);
 	}
 	
 	@DeleteMapping("/{candidateId}/image")

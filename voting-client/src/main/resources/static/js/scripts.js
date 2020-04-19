@@ -311,8 +311,8 @@
             beforeSend: function() {
                 startProgressAction();
             },
-            success: function() {
-            	candidateFormUpdateSuccess(params[0], params[1], params[2], params[5]);
+            success: function(imageUpdateStatus) {
+            	candidateFormUpdateSuccess(imageUpdateStatus, params[0], params[1], params[2], params[5]);
             },
             error: function(jqXHR, textStatus, errorThrown) {
             	candidateFormError();
@@ -331,14 +331,15 @@
         $("input").removeClass('notEmpty'); // resets the field label after submission
     }
     
-    function candidateFormUpdateSuccess(candidateName, candidateEmail, imageName, imageUploaded) { 
+    function candidateFormUpdateSuccess(imageUpdateStatus, candidateName, candidateEmail, imageName, imageUploaded) { 
     	$("#candidateName").val(candidateName);
     	$("#candidateEmail").val(candidateEmail);
         $("#candidateForm").addClass('w-50 m-auto');
         candidateSubmitUpdateMSG(true, "Candidate Details Updated!");
         $("input").removeClass('notEmpty'); // resets the field label after submission
     	
-    	imageUploaded !== null && $('#candidate-image').attr("src", `/images/candidates/${imageName}`);
+        if(imageUpdateStatus === true)
+        	imageUploaded !== null && $('#candidate-image').attr("src", `/images/candidates/${imageName}`);
     }
 
     function candidateFormError() {

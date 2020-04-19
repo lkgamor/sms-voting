@@ -1,6 +1,5 @@
 package com.twilio.voting.service;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,9 +8,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
 
 import com.twilio.voting.interfaces.CandidateService;
 import com.twilio.voting.model.Candidate;
@@ -42,14 +42,6 @@ public class CandidateServiceImplementation implements CandidateService{
 	public Candidate FetchCandidateDetailsById(String candidateId) {
 		
 		Optional<Candidate> retrievedCandidate = candidateRepository.findByCandidateId(candidateId);
-		//Check whether retrievedCandidate has an image attachment
-		if(retrievedCandidate.get().getCandidateImage() != null) {
-			/*
-			 * byte[] candidateImage =
-			 * decompressImage(retrievedCandidate.get().getCandidateImage());
-			 * retrievedCandidate.get().setCandidateImage(candidateImage);
-			 */
-		}
 		return retrievedCandidate.get();
 	}
 	
@@ -104,8 +96,16 @@ public class CandidateServiceImplementation implements CandidateService{
 		if(candidateImageType.contains(FILE_TYPE_PNG) || candidateImageType.contains(FILE_TYPE_JPG) || candidateImageType.contains(FILE_TYPE_JPEG)) {
 
 			try { 
-				File file = ResourceUtils.getFile("classpath:static/images/candidates/");
-				FileCopyUtils.copy(candidateImageData, new FileOutputStream(file.getAbsolutePath() + "/" + candidateImageName.replace(" ", "-"))); 
+				Resource resource = new ClassPathResource("/static/images/candidates/"); 
+				System.out.println(resource.getInputStream());
+				System.out.println(resource.getInputStream().toString());
+				System.out.println(resource.exists());
+				System.out.println(resource.getURL());
+				System.out.println(resource.getURL().getPath());
+				System.out.println(resource.getURI());
+				System.out.println(resource.getURI().getPath());
+				System.out.println(resource.getURI().getRawPath());
+				FileCopyUtils.copy(candidateImageData, new FileOutputStream(resource.getInputStream() + "/" + candidateImageName.replace(" ", "-")));
 				return true;
 			} 
 			catch (FileNotFoundException e) { 
@@ -130,7 +130,7 @@ public class CandidateServiceImplementation implements CandidateService{
 	
 
 	@Override
-	public void UpdateCandidate(String candidateId, CandidateSave candidateToUpdate) throws NotFoundException {
+	public Boolean UpdateCandidate(String candidateId, CandidateSave candidateToUpdate) throws NotFoundException {
 		
 		Optional<Candidate> candidate = candidateRepository.findByCandidateId(candidateId);
 		
@@ -148,14 +148,19 @@ public class CandidateServiceImplementation implements CandidateService{
 			if(candidateImageData != null) {
 				
 				String candidateImageName = candidateToUpdate.getCandidateImage().getName();
-				if(storeImage(candidateToUpdate.getCandidateImage())) 
+				if(storeImage(candidateToUpdate.getCandidateImage())) {
 					candidateImage = "/images/candidates/" + candidateImageName.replace(" ", "-");
-				
-				candidateRepository.updateCandidateInfo(candidateId, candidateName, candidateEmail, candidateImage);
+					candidateRepository.updateCandidateInfo(candidateId, candidateName, candidateEmail, candidateImage);
+					return true;
+				} else {
+					candidateRepository.updateCandidateInfo(candidateId, candidateName, candidateEmail, candidateImage);
+					return false;
+				}				
 			}
 			else {
 				candidateRepository.updateCandidateNameAndEmail(candidateId, candidateName, candidateEmail);
 			}
+			return true;
 		}
 		else {			
 			throw new NotFoundException("No Candidate with ID [" + candidateId + "] to UPDATE!");
