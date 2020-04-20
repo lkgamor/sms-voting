@@ -27,4 +27,4 @@ twilio:
   account_sid: ACee48e97cdf4dc53f47b7196111bdf146
   auth_token: 2c17fdd5899819385f5b7ce0661ce061
   trial_number: '+12097944767'
-images-directory: /pixs/
+images_directory: /target/classes/static/images/candidates

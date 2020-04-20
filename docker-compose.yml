@@ -9,7 +9,7 @@ services:
     depends_on:
       - voting-database
     volumes:
-      - ./candidate-images:/voting-app/src/main/resources/static/images/candidates
+      - ./candidate-images:/voting-app/target/classes/static/images/candidates
     networks:
       - voting-network
     ports:

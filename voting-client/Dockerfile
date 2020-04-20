@@ -24,6 +24,7 @@ WORKDIR /voting-app
 
 #Copy all required files and folders to working directory
 COPY voting-client/src ./src
+COPY voting-client/target/classes/static/images/candidates ./target/classes/static/images/candidates
 
 #Copy over built artifacts from maven-dependencies
 COPY --from=maven-dependencies target/voting.jar ./target/

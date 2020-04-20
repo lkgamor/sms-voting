@@ -9,11 +9,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.springframework.boot.system.ApplicationHome;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
-import com.twilio.voting.VotingApplication;
 import com.twilio.voting.interfaces.CandidateService;
 import com.twilio.voting.model.Candidate;
 import com.twilio.voting.model.CandidateImage;
@@ -31,8 +30,9 @@ public class CandidateServiceImplementation implements CandidateService{
 	private static final String FILE_TYPE_PNG = "image/png";
 	private static final String FILE_TYPE_JPG = "image/jpg";
 	private static final String FILE_TYPE_JPEG = "image/jpeg";
-	private static final String IMAGES_DIRECTORY = "/src/main/resources/static/images/candidates/";
 	
+	@Value("${images_directory}")
+	private String IMAGES_DIRECTORY;
 	
 	@Override
 	public List<Candidate> FetchAllCandidates() {
