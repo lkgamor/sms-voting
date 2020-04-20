@@ -99,9 +99,6 @@ public class CandidateServiceImplementation implements CandidateService{
 
 			try { 
 				File file = new File("");
-				ApplicationHome home = new ApplicationHome(VotingApplication.class);
-				System.out.println(home.getDir());
-				System.out.println(file.getAbsolutePath());
 				FileCopyUtils.copy(candidateImageData, new FileOutputStream(file.getAbsolutePath() + IMAGES_DIRECTORY + candidateImageName.replace(" ", "-")));
 				return true;
 			} 
