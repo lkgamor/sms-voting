@@ -10,8 +10,6 @@ import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.boot.system.ApplicationHome;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
@@ -100,13 +98,10 @@ public class CandidateServiceImplementation implements CandidateService{
 		if(candidateImageType.contains(FILE_TYPE_PNG) || candidateImageType.contains(FILE_TYPE_JPG) || candidateImageType.contains(FILE_TYPE_JPEG)) {
 
 			try { 
-				Resource resource = new ClassPathResource("/static/images/candidates/"); 
 				File file = new File("");
 				ApplicationHome home = new ApplicationHome(VotingApplication.class);
 				System.out.println(home.getDir());
 				System.out.println(file.getAbsolutePath());
-				System.out.println(resource.getInputStream());
-				System.out.println(resource.getURL());
 				FileCopyUtils.copy(candidateImageData, new FileOutputStream(file.getAbsolutePath() + IMAGES_DIRECTORY + candidateImageName.replace(" ", "-")));
 				return true;
 			} 
