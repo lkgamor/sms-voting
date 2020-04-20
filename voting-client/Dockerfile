@@ -28,8 +28,6 @@ COPY voting-client/src ./src
 #Copy over built artifacts from maven-dependencies
 COPY --from=maven-dependencies target/voting.jar ./target/
 
-VOLUME /var/lib/sms-voting
-
 EXPOSE 9000
 
 ENTRYPOINT ["java", "-jar", "./target/voting.jar"]

@@ -15,7 +15,7 @@ services:
     depends_on:
       - voting-database
     volumes:
-      - voting-application:/var/lib/sms-voting
+      - voting-application:/voting-app/src/main/resources/static/images/candidates
     networks:
       - voting-network
     ports:
