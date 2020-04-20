@@ -9,6 +9,9 @@
 	let getCandidates = () => {
 		$.ajax({
 			url: "/api/v1/candidate",
+			beforeSend: ()=> {
+				NProgress.start();
+			},
 			success: (candidates)=> {
 				
 				candidates.forEach((candidate)=> {
@@ -44,6 +47,10 @@
 			},
 			error: ()=> {
 				console.log("Error...")
+			},
+			complete: ()=> {
+				NProgress.done();
+				NProgress.remove();				
 			}
 		});
 	};

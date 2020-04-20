@@ -65,8 +65,13 @@
                                         <div class="help-block with-errors"></div>
                                     </div>
                                     <div class="form-group">
-                                        <button th:if="${candidate.candidateId}" type="submit" class="form-control-submit-button w-50">UPDATE</button>
-                                        <button th:unless="${candidate.candidateId}" type="submit" class="form-control-submit-button w-50">REGISTER</button>
+                                        <button th:if="${candidate.candidateId}" type="submit" class="form-control-update-button w-50">UPDATE</button>
+                                        <button th:unless="${candidate.candidateId}" type="submit" class="form-control-register-button w-50">REGISTER</button>
+                                        <button th:if="${candidate.candidateId}" class="form-control-delete-button d-none w-50">REMOVE</button>
+                                        <div th:if="${candidate.candidateId}" class="form-control-button-togglers">
+                                        	<i class="fas fa-edit" id="toggle__update" title="Show Update Button"></i>
+                                        	<i class="fas fa-trash-alt" id="toggle__delete" title="Show Delete Button"></i>
+                                        </div>
                                     </div>
                                     <div class="form-message">
                                     	<div th:if="${candidate.candidateId}" id="candidateMsgUpdate" class="h3 text-center hidden"></div>

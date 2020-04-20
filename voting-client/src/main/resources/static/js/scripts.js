@@ -18,6 +18,7 @@
 			var preloader = $('.spinner-wrapper');
 			setTimeout(function() {
 				preloader.fadeOut(preloaderFadeOutTime);
+				$("#candidateId").val() !== "" && localStorage.setItem('action','update'); //-->> Initialize Default button action
 			}, 500);
 		}
 		hidePreloader();
@@ -202,8 +203,12 @@
         } else {
             // everything looks good!
             event.preventDefault();
-            $("#candidateId").val() === "" && candidateSaveForm();
-            $("#candidateId").val() !== "" && candidateUpdateForm();        
+            $("#candidateId").val() === "" && candidateSaveForm(); //--->> SAVE CANDIDATE DETAILS
+            if($("#candidateId").val() !== "") {
+            	
+            	localStorage.getItem('action') === 'update' && candidateUpdateForm(); 
+            	localStorage.getItem('action') === 'delete' && candidateDeleteForm();
+    		}       
         }
     });
     
@@ -324,6 +329,36 @@
         });
     }
     
+    function candidateDeleteForm() {
+    	swal({
+    		type: 'info', 
+    		title: 'Remove Candidate?',
+    		showConfirmButton: true, 
+    		showCancelButton: true,
+    		confirmButtonText: 'Yes!'
+    	});
+    	$('.confirm').on('click', ()=> {
+	    	$.ajax({
+	            type: "DELETE",
+	            url: "/api/v1/candidate/" + $("#candidateId").val(),
+	            beforeSend: function() {
+	                startProgressAction();
+	            },
+	            success: function() {
+
+	            	swal({type: 'success', title: 'Candidate Removed!', showConfirmButton: false, timer: 2000});
+	            	setTimeout(()=> {
+	            		window.location.href = '/candidate';
+	            	}, 1000);
+	            },
+	            error: function() {
+	            	stopProgressAction();
+	            	swal({type: 'error', title: 'Oops', text: "Unable to remove candidate at the moment!", showConfirmButton: false, timer: 3000});
+	            }
+	        });
+    	});
+    }
+    
     function candidateFormSaveSuccess() {
         $("#candidateForm")[0].reset();
         $("#candidateForm").addClass('w-50 m-auto');
@@ -338,8 +373,10 @@
         candidateSubmitUpdateMSG(true, "Candidate Details Updated!");
         $("input").removeClass('notEmpty'); // resets the field label after submission
     	
-        if(imageUpdateStatus === true)
-        	imageUploaded !== null && $('#candidate-image').attr("src", `/images/candidates/${imageName}`);
+        setTimeout(()=> {
+        	if(imageUpdateStatus === true)
+        		imageUploaded !== null && $('#candidate-image').attr("src", `/images/candidates/${imageName}`);
+        },100);
     }
 
     function candidateFormError() {
@@ -416,36 +453,17 @@
     });
 	
 	
-	$("#delete-candidate").on("click", ()=> {
-    	swal({
-    		type: 'info', 
-    		title: 'Remove Candidate?',
-    		showConfirmButton: true, 
-    		showCancelButton: true,
-    		confirmButtonText: 'Yes!'
-    	});
-    	$('.confirm').on('click', ()=> {
-	    	$.ajax({
-	            type: "DELETE",
-	            url: "/api/v1/candidate/" + $("#candidateId").val(),
-	            beforeSend: function() {
-	                startProgressAction();
-	            },
-	            success: function() {
+	$("#toggle__update").on("click", ()=> {
+		$('.form-control-update-button').removeClass('d-none').addClass('d-block');
+		$('.form-control-delete-button').removeClass('d-block').addClass('d-none');
+		localStorage.setItem('action','update');
+	});
+	
+	$("#toggle__delete").on("click", ()=> {
+		$('.form-control-update-button').removeClass('d-block').addClass('d-none');
+		$('.form-control-delete-button').removeClass('d-none').addClass('d-block');	
+		localStorage.setItem('action','delete');
+	});
 
-	            	swal({type: 'success', title: 'Candidate Removed!', showConfirmButton: false, timer: 2000});
-	            	setTimeout(()=> {
-	            		window.location.href = '/candidate';
-	            	}, 2000);
-	            },
-	            error: function() {
-	            	swal({type: 'error', title: 'Oops', text: "Unable to remove candidate at the moment!", showConfirmButton: false, timer: 3000});
-	            },
-	            complete: ()=> {
-	            	stopProgressAction();
-	            }
-	        });
-    	});
-    });
     
 })(jQuery);

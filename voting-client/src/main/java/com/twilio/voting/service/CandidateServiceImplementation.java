@@ -1,5 +1,6 @@
 package com.twilio.voting.service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,11 +9,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
+import com.twilio.voting.VotingApplication;
 import com.twilio.voting.interfaces.CandidateService;
 import com.twilio.voting.model.Candidate;
 import com.twilio.voting.model.CandidateImage;
@@ -30,6 +33,7 @@ public class CandidateServiceImplementation implements CandidateService{
 	private static final String FILE_TYPE_PNG = "image/png";
 	private static final String FILE_TYPE_JPG = "image/jpg";
 	private static final String FILE_TYPE_JPEG = "image/jpeg";
+	private static final String IMAGES_DIRECTORY = "/src/main/resources/static/images/candidates/";
 	
 	
 	@Override
@@ -97,15 +101,13 @@ public class CandidateServiceImplementation implements CandidateService{
 
 			try { 
 				Resource resource = new ClassPathResource("/static/images/candidates/"); 
+				File file = new File("");
+				ApplicationHome home = new ApplicationHome(VotingApplication.class);
+				System.out.println(home.getDir());
+				System.out.println(file.getAbsolutePath());
 				System.out.println(resource.getInputStream());
-				System.out.println(resource.getInputStream().toString());
-				System.out.println(resource.exists());
 				System.out.println(resource.getURL());
-				System.out.println(resource.getURL().getPath());
-				System.out.println(resource.getURI());
-				System.out.println(resource.getURI().getPath());
-				System.out.println(resource.getURI().getRawPath());
-				FileCopyUtils.copy(candidateImageData, new FileOutputStream(resource.getInputStream() + "/" + candidateImageName.replace(" ", "-")));
+				FileCopyUtils.copy(candidateImageData, new FileOutputStream(file.getAbsolutePath() + IMAGES_DIRECTORY + candidateImageName.replace(" ", "-")));
 				return true;
 			} 
 			catch (FileNotFoundException e) { 
