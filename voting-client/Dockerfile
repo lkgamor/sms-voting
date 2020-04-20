@@ -1,9 +1,6 @@
 #Download base maven image
 FROM maven:3.6-jdk-11 AS maven-dependencies
 
-#Set our working directory
-WORKDIR /build
-
 #Copy project pom file to working directory
 COPY voting-client/pom.xml .
 
@@ -25,8 +22,11 @@ MAINTAINER lkgamor@gmail.com
 #Set project deployment directory
 WORKDIR /voting-app
 
+#Copy all required files and folders to working directory
+COPY voting-client/src ./src
+
 #Copy over built artifacts from maven-dependencies
-COPY --from=maven-dependencies build/target/voting.jar ./target/
+COPY --from=maven-dependencies target/voting.jar ./target/
 
 VOLUME /var/lib/sms-voting
 
