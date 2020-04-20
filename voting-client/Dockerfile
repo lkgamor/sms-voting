@@ -7,11 +7,14 @@ COPY voting-client/pom.xml .
 #Build and cache all dependencies
 RUN mvn dependency:go-offline -B
 
-#Copy all required files and folders to working directory
+#Copy all required files and folders to 'build' directory
 COPY voting-client/src ./src
 
 #Build application binary
 RUN mvn clean package -DskipTests
+
+#Copy required folder to 'build' directory
+COPY voting-client/target/classes/static/images/candidates ./target/classes/static/images/candidates
 
 #Download final package image
 FROM openjdk:11-jre-slim
