@@ -13,9 +13,6 @@ COPY voting-client/src ./src
 #Build application binary
 RUN mvn clean package -DskipTests
 
-#Copy required folder to 'build' directory
-COPY voting-client/target/classes/static/images/candidates ./target/classes/static/images/candidates
-
 #Download final package image
 FROM openjdk:11-jre-slim
 
@@ -27,10 +24,10 @@ WORKDIR /voting-app
 
 #Copy all required files and folders to working directory
 COPY voting-client/src ./src
-COPY voting-client/target/classes/static/images/candidates ./target/classes/static/images/candidates
 
 #Copy over built artifacts from maven-dependencies
 COPY --from=maven-dependencies target/voting.jar ./target/
+COPY --from=maven-dependencies target/classes/static/images/candidates ./target/classes/static/images/candidates
 
 EXPOSE 9000
 
