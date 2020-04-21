@@ -27,7 +27,6 @@ COPY voting-client/src ./src
 
 #Copy over built artifacts from maven-dependencies
 COPY --from=maven-dependencies target/voting.jar ./target/
-COPY --from=maven-dependencies target/classes/static/images/candidates ./target/classes/static/images/candidates
 
 EXPOSE 9000
 
